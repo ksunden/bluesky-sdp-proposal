@@ -1,0 +1,114 @@
+\documentclass{presentation}
+\usepackage[nott]{inconsolata}
+
+\title{Self-Describing Plans}
+\author{Kyle Sunden \\ Blaise Thompson}
+
+\institute{University of Wisconsin--Madison}
+\date{2022-04-01}
+
+\begin{document}
+\maketitle
+
+\section{Motivation}
+
+\begin{frame}{Why does UW-Madison care?}
+  \begin{itemize}
+    \item Want ``first class'' user interfaces for our Bluesky systems
+    \begin{itemize}
+      \item typhos
+      \item webclient
+    \end{itemize}
+    \item Mix of control systems
+    \begin{itemize}
+      \item zero percent EPICS
+    \end{itemize}
+    \item Way too small-scale to produce interfaces for each plan by hand
+    \item Variety of plans
+    \item Queueserver
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Self-Describing Plans}
+  Let's use annotations to make plans self-describing.
+  \begin{itemize}
+    \item{automate GUI generation}
+    \item{validation}
+    \item{serialize}
+    \item{help queueserver cast correctly}
+  \end{itemize}
+\end{frame}
+
+\section{Proposal}
+
+\begin{frame}[fragile]{State of the Art}
+  Queueserver already supports plan descrptions through a home-built annotation system.
+  \vfill
+
+  \scriptsize
+  \begin{minted}{JSON}
+"name": "annotated_count",
+"properties": {"is_generator": true},
+"parameters": [
+    {"name": "detectors",
+      "kind": {"name": "POSITIONAL_OR_KEYWORD", "value": 1}},
+    {"name": "num",
+      "kind": {"name": "POSITIONAL_OR_KEYWORD", "value": 1},
+      "annotation": {"type": "int"},
+      "default": "1"},
+    {"name": "per_shot",
+      "kind": {"name": "KEYWORD_ONLY", "value": 3},
+      "default": "None"},
+    {"name": "md",
+      "kind": {"name": "KEYWORD_ONLY", "value": 3},
+      "default": "None"}
+],
+"module": "__main__"
+  \end{minted}
+\end{frame}
+
+\begin{frame}{Proposal}
+  Use typing to fully annotate plans. \\
+  Simply annotate plans themselves with PEP3107-style planning.
+
+  \vfill
+
+  for count:
+  \begin{tabular}{ l | l }
+    detectors & \texttt{typing.Sequence[bluesky.protocols.Readable]} \\
+    num & \texttt{int} \\
+    per\_shot & \texttt{typing.Callable} \\
+    md & \texttt{typing.Dict[str, typing.Any]} \\
+  \end{tabular}
+
+  \vfill
+
+  \begin{itemize}
+    \item static type checking
+    \item easy to inspect for serialization
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Proposal}
+  TODO: If annotated as yielding messages, can easily pick plans out of namespace.
+\end{frame}
+
+\begin{frame}{Proposal}
+  Problem: bluesky built-in plans make heavy use of \hl{variadic cycles}. \\
+  Kyle and I cannot figure out how to hint these... \\
+  Relevant PEPs:
+  \begin{itemize}
+    \item PEP3107: Function Annotations
+    \item PEP593: Flexible function and variable annotations
+    \item PEP612: Parameter Specification Variables
+    \item PEP613: Explicit Type Aliases
+    \item PEP646: Variadic Generics
+    \item PEP484: Type Hints
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Proposal}
+  TODO: use tuples... annotation possible can be backwards compatible
+\end{frame}
+
+\end{document}

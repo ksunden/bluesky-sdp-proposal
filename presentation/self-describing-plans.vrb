@@ -1,0 +1,24 @@
+\frametitle{State of the Art}
+Queueserver already supports plan descrptions through a home-built annotation system.
+  \vfill
+
+  \scriptsize
+  \begin{minted}{JSON}
+"name": "annotated_count",
+"properties": {"is_generator": true},
+"parameters": [
+    {"name": "detectors",
+      "kind": {"name": "POSITIONAL_OR_KEYWORD", "value": 1}},
+    {"name": "num",
+      "kind": {"name": "POSITIONAL_OR_KEYWORD", "value": 1},
+      "annotation": {"type": "int"},
+      "default": "1"},
+    {"name": "per_shot",
+      "kind": {"name": "KEYWORD_ONLY", "value": 3},
+      "default": "None"},
+    {"name": "md",
+      "kind": {"name": "KEYWORD_ONLY", "value": 3},
+      "default": "None"}
+],
+"module": "__main__"
+  \end{minted}

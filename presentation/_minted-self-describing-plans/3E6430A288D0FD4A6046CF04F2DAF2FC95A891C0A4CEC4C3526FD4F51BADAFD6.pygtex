@@ -1,0 +1,19 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}annotated\PYGZus{}count\PYGZdq{}}\PYG{p}{,}
+\PYG{n+nt}{\PYGZdq{}properties\PYGZdq{}}\PYG{p}{:} \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}is\PYGZus{}generator\PYGZdq{}}\PYG{p}{:} \PYG{k+kc}{true}\PYG{p}{\PYGZcb{},}
+\PYG{n+nt}{\PYGZdq{}parameters\PYGZdq{}}\PYG{p}{:} \PYG{p}{[}
+    \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}detectors\PYGZdq{}}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}kind\PYGZdq{}}\PYG{p}{:} \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}POSITIONAL\PYGZus{}OR\PYGZus{}KEYWORD\PYGZdq{}}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}value\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{1}\PYG{p}{\PYGZcb{}\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}num\PYGZdq{}}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}kind\PYGZdq{}}\PYG{p}{:} \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}POSITIONAL\PYGZus{}OR\PYGZus{}KEYWORD\PYGZdq{}}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}value\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{1}\PYG{p}{\PYGZcb{},}
+      \PYG{n+nt}{\PYGZdq{}annotation\PYGZdq{}}\PYG{p}{:} \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}type\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}int\PYGZdq{}}\PYG{p}{\PYGZcb{},}
+      \PYG{n+nt}{\PYGZdq{}default\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}1\PYGZdq{}}\PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}per\PYGZus{}shot\PYGZdq{}}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}kind\PYGZdq{}}\PYG{p}{:} \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}KEYWORD\PYGZus{}ONLY\PYGZdq{}}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}value\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{3}\PYG{p}{\PYGZcb{},}
+      \PYG{n+nt}{\PYGZdq{}default\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}None\PYGZdq{}}\PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}md\PYGZdq{}}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}kind\PYGZdq{}}\PYG{p}{:} \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}KEYWORD\PYGZus{}ONLY\PYGZdq{}}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}value\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{3}\PYG{p}{\PYGZcb{},}
+      \PYG{n+nt}{\PYGZdq{}default\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}None\PYGZdq{}}\PYG{p}{\PYGZcb{}}
+\PYG{p}{],}
+\PYG{n+nt}{\PYGZdq{}module\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}\PYGZus{}\PYGZus{}main\PYGZus{}\PYGZus{}\PYGZdq{}}
+\end{Verbatim}
