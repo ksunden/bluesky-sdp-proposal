@@ -1,0 +1,6 @@
+
+git+https://github.com/ksunden/bluesky@self_describing_plans
+qtypes
+ophyd
+qtpy
+pyside2
