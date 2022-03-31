@@ -1,0 +1,20 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kn}{from} \PYG{n+nn}{bluesky} \PYG{k+kn}{import} \PYG{n}{RunEngine}
+\PYG{k+kn}{from} \PYG{n+nn}{bluesky} \PYG{k+kn}{import} \PYG{n}{plans} \PYG{k}{as} \PYG{n}{bp}
+\PYG{k+kn}{from} \PYG{n+nn}{ophyd.sim} \PYG{k+kn}{import} \PYG{n}{det1}\PYG{p}{,} \PYG{n}{motor1}\PYG{p}{,} \PYG{n}{motor2}
+\PYG{n}{RE} \PYG{o}{=} \PYG{n}{RunEngine}\PYG{p}{()}
+\PYG{c+c1}{\PYGZsh{} still works}
+\PYG{n}{RE}\PYG{p}{(}\PYG{n}{bp}\PYG{o}{.}\PYG{n}{grid\PYGZus{}scan}\PYG{p}{([}\PYG{n}{det1}\PYG{p}{],}
+                \PYG{n}{motor1}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{1.5}\PYG{p}{,} \PYG{l+m+mf}{1.5}\PYG{p}{,} \PYG{l+m+mi}{3}\PYG{p}{,}
+                \PYG{n}{motor2}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.1}\PYG{p}{,} \PYG{l+m+mf}{0.1}\PYG{p}{,} \PYG{l+m+mi}{5}\PYG{p}{)}
+\PYG{c+c1}{\PYGZsh{} now also valid}
+\PYG{n}{RE}\PYG{p}{(}\PYG{n}{bp}\PYG{o}{.}\PYG{n}{grid\PYGZus{}scan}\PYG{p}{([}\PYG{n}{det1}\PYG{p}{],}
+                \PYG{p}{(}\PYG{n}{motor1}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{1.5}\PYG{p}{,} \PYG{l+m+mf}{1.5}\PYG{p}{,} \PYG{l+m+mi}{3}\PYG{p}{),}
+                \PYG{p}{(}\PYG{n}{motor2}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.1}\PYG{p}{,} \PYG{l+m+mf}{0.1}\PYG{p}{,} \PYG{l+m+mi}{5}\PYG{p}{))}
+\PYG{c+c1}{\PYGZsh{} passes mypy}
+\PYG{n}{RE}\PYG{p}{(}\PYG{n}{bp}\PYG{o}{.}\PYG{n}{grid\PYGZus{}scan}\PYG{p}{([}\PYG{n}{det1}\PYG{p}{],}
+                \PYG{n}{bp}\PYG{o}{.}\PYG{n}{GridScanAxis}\PYG{p}{(}\PYG{n}{motor1}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{1.5}\PYG{p}{,} \PYG{l+m+mf}{1.5}\PYG{p}{,} \PYG{l+m+mi}{3}\PYG{p}{),}
+                \PYG{n}{bp}\PYG{o}{.}\PYG{n}{GridScanAxis}\PYG{p}{(}\PYG{n}{motor2}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.1}\PYG{p}{,} \PYG{l+m+mf}{0.1}\PYG{p}{,} \PYG{l+m+mi}{5}\PYG{p}{))}
+
+
+\end{Verbatim}

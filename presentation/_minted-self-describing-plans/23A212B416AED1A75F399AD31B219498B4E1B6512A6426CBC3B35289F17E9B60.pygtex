@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{Sequence}\PYG{p}{[}\PYG{n}{Msg}\PYG{p}{]}
+\PYG{n}{Generator}\PYG{p}{[}\PYG{n}{Msg}\PYG{p}{,} \PYG{n}{Any}\PYG{p}{,} \PYG{n}{Any}\PYG{p}{]}
+\end{Verbatim}

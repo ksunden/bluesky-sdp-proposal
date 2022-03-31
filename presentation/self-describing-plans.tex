@@ -39,9 +39,9 @@
   \end{itemize}
 \end{frame}
 
-\section{Proposal}
+\section{Prior Art}
 
-\begin{frame}[fragile]{State of the Art}
+\begin{frame}[fragile]{Prior Art}
   Queueserver already supports plan descrptions through a home-built annotation system.
   \vfill
 
@@ -67,9 +67,49 @@
   \end{minted}
 \end{frame}
 
+\begin{frame}{Prior Art}
+  For those who need a review of parameter kinds enum (from inspect library)
+  \begin{tabular}{ l | l }
+    0 & \texttt{POSITIONAL\_ONLY} \\
+    1 & \texttt{POSITIONAL\_OR\_KEYWORD} \\
+    2 & \texttt{VAR\_POSITIONAL} \\
+    3 & \texttt{KEYWORD\_ONLY} \\
+    4 & \texttt{VAR\_KEYWORD} \\
+  \end{tabular}
+\end{frame}
+
+\begin{frame}[fragile]{Prior Art}
+  From queueserver documentation
+  \vfill
+
+  \scriptsize
+  \begin{minted}{python}
+from ophyd.sim import det1, det2, det3
+# Assume that the detectors 'det1', 'det2', 'det3' are in the list
+#   of allowed devices for the user submitting the plan.
+
+from bluesky_queueserver import parameter_annotation_decorator
+
+@parameter_annotation_decorator({
+    "parameters": {
+        "detectors": {
+            "annotation": "typing.List[DevicesType1]",
+            "devices": {"DevicesType1": ["det1", "det2", "det3"]}
+        }
+    }
+})
+def plan_demo1f(detectors, npts):
+    # The parameter 'detector_names'
+    #   is expected to receive a list of detector names.
+    <code implementing the plan>
+  \end{minted}
+\end{frame}
+
+\section{Proposal}
+
 \begin{frame}{Proposal}
   Use typing to fully annotate plans. \\
-  Simply annotate plans themselves with PEP3107-style planning.
+  Simply annotate plans themselves as in PEP3107. \\
 
   \vfill
 
@@ -84,13 +124,66 @@
   \vfill
 
   \begin{itemize}
+    \item use standard library features, less code to maintain
     \item static type checking
     \item easy to inspect for serialization
+    \item doesn't support queueserver concept ``limits'', but extensible
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Proposal}
-  TODO: If annotated as yielding messages, can easily pick plans out of namespace.
+\begin{frame}[fragile]{Proposal}
+  For those looking to automatically find all the plans in a namespace. \\
+  Annotate return type.
+
+  \vfill
+
+  \scriptsize
+  \begin{minted}{python}
+from typing import Generator
+def count(detectors, num=1, delay=None, *, per_shot=None, md=None)
+    -> Generator[Msg, None, None]:
+  \end{minted}
+
+  \vfill
+
+  \normalsize
+  Would be easy to check return annotation for one of:
+
+  \vfill
+
+  \scriptsize
+  \begin{minted}{python}
+Sequence[Msg]
+Generator[Msg, Any, Any]
+  \end{minted}
+
+  \vfill
+
+  \normalsize
+  There are probably other valid annotations that I'm forgetting. \\
+  See bluesky/bluesky \#1491
+\end{frame}
+
+\begin{frame}[fragile]{Proposal}
+  Put it all together...
+
+  \vfill
+
+  \scriptsize
+  \begin{minted}{python}
+def count(detectors: typing.Sequence[bluesky.protocols.Readable],
+          num: int = 1,
+          delay: typing.Union[NoneType,
+                              typing.Iterable[float],
+                              float]
+                                = None,
+          *,
+          per_shot: typing.Callable = None,
+          md: typing.Dict[str, typing.Any] = None)
+    -> Generator[Msg, None, None]:
+  \end{minted}
+
+  \vfill
 \end{frame}
 
 \begin{frame}{Proposal}
@@ -107,8 +200,64 @@
   \end{itemize}
 \end{frame}
 
+\begin{frame}[fragile]{Proposal}
+  Tuples for type checking, while remaining backwards compatible.
+  \vfill
+
+  \scriptsize
+  \begin{minted}{python}
+from bluesky import RunEngine
+from bluesky import plans as bp
+from ophyd.sim import det1, motor1, motor2
+RE = RunEngine()
+# still works
+RE(bp.grid_scan([det1],
+                motor1, -1.5, 1.5, 3,
+                motor2, -0.1, 0.1, 5)
+# now also valid
+RE(bp.grid_scan([det1],
+                (motor1, -1.5, 1.5, 3),
+                (motor2, -0.1, 0.1, 5))
+# passes mypy
+RE(bp.grid_scan([det1],
+                bp.GridScanAxis(motor1, -1.5, 1.5, 3),
+                bp.GridScanAxis(motor2, -0.1, 0.1, 5))
+
+
+  \end{minted}
+\end{frame}
+
 \begin{frame}{Proposal}
-  TODO: use tuples... annotation possible can be backwards compatible
+  for count:
+  \begin{tabular}{ l | l }
+    detectors & \texttt{typing.Sequence[bluesky.protocols.Readable]} \\
+    num & \texttt{int} \\
+    per\_shot & \texttt{typing.Callable} \\
+    md & \texttt{typing.Dict[str, typing.Any]} \\
+  \end{tabular}
+
+  \vfill
+
+  for grid\_scan:
+  \begin{tabular}{ l | l }
+    detectors & \texttt{typing.Sequence[bluesky.protocols.Readable]} \\
+    args & \texttt{GridScanAxis} \\
+    snake\_axes & \texttt{typing.Optional[bool]} \\
+    per\_step & \texttt{typing.Callable} \\
+    md & \texttt{typing.Dict[str, typing.Any]} \\
+  \end{tabular}
+\end{frame}
+
+\begin{frame}{Proposal}
+  Extend existing serialization system in Queueserver. \\
+  Migrate serialize function into bluesky library.
+
+  \vfill
+
+  Cannot use existing schema standards, as far as we know... \\
+  objects are too complex.
+
+  \vfill
 \end{frame}
 
 \end{document}

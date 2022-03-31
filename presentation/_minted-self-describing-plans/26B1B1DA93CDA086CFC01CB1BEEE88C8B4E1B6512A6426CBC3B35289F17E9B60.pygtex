@@ -1,0 +1,20 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kn}{from} \PYG{n+nn}{ophyd.sim} \PYG{k+kn}{import} \PYG{n}{det1}\PYG{p}{,} \PYG{n}{det2}\PYG{p}{,} \PYG{n}{det3}
+\PYG{c+c1}{\PYGZsh{} Assume that the detectors \PYGZsq{}det1\PYGZsq{}, \PYGZsq{}det2\PYGZsq{}, \PYGZsq{}det3\PYGZsq{} are in the list}
+\PYG{c+c1}{\PYGZsh{}   of allowed devices for the user submitting the plan.}
+
+\PYG{k+kn}{from} \PYG{n+nn}{bluesky\PYGZus{}queueserver} \PYG{k+kn}{import} \PYG{n}{parameter\PYGZus{}annotation\PYGZus{}decorator}
+
+\PYG{n+nd}{@parameter\PYGZus{}annotation\PYGZus{}decorator}\PYG{p}{(\PYGZob{}}
+    \PYG{l+s+s2}{\PYGZdq{}parameters\PYGZdq{}}\PYG{p}{:} \PYG{p}{\PYGZob{}}
+        \PYG{l+s+s2}{\PYGZdq{}detectors\PYGZdq{}}\PYG{p}{:} \PYG{p}{\PYGZob{}}
+            \PYG{l+s+s2}{\PYGZdq{}annotation\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}typing.List[DevicesType1]\PYGZdq{}}\PYG{p}{,}
+            \PYG{l+s+s2}{\PYGZdq{}devices\PYGZdq{}}\PYG{p}{:} \PYG{p}{\PYGZob{}}\PYG{l+s+s2}{\PYGZdq{}DevicesType1\PYGZdq{}}\PYG{p}{:} \PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}det1\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}det2\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}det3\PYGZdq{}}\PYG{p}{]\PYGZcb{}}
+        \PYG{p}{\PYGZcb{}}
+    \PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{})}
+\PYG{k}{def} \PYG{n+nf}{plan\PYGZus{}demo1f}\PYG{p}{(}\PYG{n}{detectors}\PYG{p}{,} \PYG{n}{npts}\PYG{p}{):}
+    \PYG{c+c1}{\PYGZsh{} The parameter \PYGZsq{}detector\PYGZus{}names\PYGZsq{}}
+    \PYG{c+c1}{\PYGZsh{}   is expected to receive a list of detector names.}
+    \PYG{o}{\PYGZlt{}}\PYG{n}{code} \PYG{n}{implementing} \PYG{n}{the} \PYG{n}{plan}\PYG{o}{\PYGZgt{}}
+\end{Verbatim}

@@ -1,24 +1,25 @@
-\frametitle{State of the Art}
-Queueserver already supports plan descrptions through a home-built annotation system.
+\frametitle{Proposal}
+Tuples for type checking, while remaining backwards compatible.
   \vfill
 
   \scriptsize
-  \begin{minted}{JSON}
-"name": "annotated_count",
-"properties": {"is_generator": true},
-"parameters": [
-    {"name": "detectors",
-      "kind": {"name": "POSITIONAL_OR_KEYWORD", "value": 1}},
-    {"name": "num",
-      "kind": {"name": "POSITIONAL_OR_KEYWORD", "value": 1},
-      "annotation": {"type": "int"},
-      "default": "1"},
-    {"name": "per_shot",
-      "kind": {"name": "KEYWORD_ONLY", "value": 3},
-      "default": "None"},
-    {"name": "md",
-      "kind": {"name": "KEYWORD_ONLY", "value": 3},
-      "default": "None"}
-],
-"module": "__main__"
+  \begin{minted}{python}
+from bluesky import RunEngine
+from bluesky import plans as bp
+from ophyd.sim import det1, motor1, motor2
+RE = RunEngine()
+# still works
+RE(bp.grid_scan([det1],
+                motor1, -1.5, 1.5, 3,
+                motor2, -0.1, 0.1, 5)
+# now also valid
+RE(bp.grid_scan([det1],
+                (motor1, -1.5, 1.5, 3),
+                (motor2, -0.1, 0.1, 5))
+# passes mypy
+RE(bp.grid_scan([det1],
+                bp.GridScanAxis(motor1, -1.5, 1.5, 3),
+                bp.GridScanAxis(motor2, -0.1, 0.1, 5))
+
+
   \end{minted}
