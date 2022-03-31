@@ -1,5 +1,6 @@
 import ast
 import enum
+import json
 import sys
 
 from ophyd import sim
@@ -17,7 +18,7 @@ class RGB(enum.Enum):
     GREEN=2
     BLUE=3
 
-def many_different_params(i: int, f: float, b: bool, s: str, r: protocols.Readable, m: protocols.Movable, fl: protocols.Flyable, e: RGB):
+def many_different_params(r: protocols.Readable, m: protocols.Movable, fl: protocols.Flyable, i: int=10, f: float=3.14, b: bool=True, s: str="a string", e: RGB=RGB.BLUE):
     yield bluesky.Msg("null")
 
 
@@ -102,6 +103,19 @@ class Union(qtypes.Null):
         if value["value"] not in ("None", "NoneType"):
             get_qtypes_widget(value["value"], "value", self, self.named_types)
 
+    def set_value(self, value):
+        for ty in self.type_enum.get()["allowed"]:
+            self.type_enum.set_value(ty)
+            if value is None and ty in ("None", "NoneType"):
+                break
+            try:
+                self.children[-1].set_value(value)
+            except:
+                pass
+            break
+        else:
+            print(f"Could not set union value, {value}, for {self.type_enum.get()['allowed']}")
+
 
 class NamedTuple(qtypes.Null):
     def __init__(self, name, type_map, parent, named_types, at=None):
@@ -115,9 +129,20 @@ class NamedTuple(qtypes.Null):
             get_qtypes_widget(v, k, self, self.named_types)
 
 
+class AnyJson(qtypes.String):
+    def __init__(self, name):
+        super().__init__(name)
+        self.edited.connect(self.validate)
+
+    def validate(self, value):
+        try:
+            json.loads(value["value"])
+        except json.JSONDecodeError:
+            escaped = value["value"].replace("\\", "\\\\").replace('"', '\\"')
+            self.set({"value": f"\"{escaped}\""})
 
 
-# TODO: default values
+
 # TODO: Tuples (Named Tuples)
 def get_parameter_widget(parameter, parent, named_types):
     if "annotation" not in parameter or "type" not in parameter["annotation"]:
@@ -160,7 +185,7 @@ def get_qtypes_widget(type_, name, parent, named_types, at=None):
         elif ast.unparse(expr) == "bluesky.protocols.Flyable":
             ret = qtypes.Enum(name, value={"allowed": list(flyables.keys())})
         elif ast.unparse(expr) == "typing.Any":
-            ret = qtypes.String(name)
+            ret = AnyJson(name)
         if ret is not None:
             if at is None:
                 parent.append(ret)
@@ -205,7 +230,12 @@ class PlanWindow(QtWidgets.QMainWindow):
         pprint(ser[plan["value"]])
         self.plan_sel.takeChildren()
         for parm in ser[plan["value"]]["parameters"]:
-            get_parameter_widget(parm, self.plan_sel, ser[plan["value"]]["named_types"])
+            widget = get_parameter_widget(parm, self.plan_sel, ser[plan["value"]]["named_types"])
+            if widget and "default" in parm:
+                widget.set_value(parm["default"])
+            if widget is None:
+                print(parm, "No widget")
+
         self.plan_sel.setExpanded(True)
 
 def main():
