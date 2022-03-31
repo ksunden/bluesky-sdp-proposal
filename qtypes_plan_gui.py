@@ -39,15 +39,15 @@ class Sequence(qtypes.Null):
             parent.insert(at, self)
         self.named_types = named_types
         self.type_ = type_
-        self.add = qtypes.Button("add")
+        self.add = qtypes.Button("", value={"text": "add"})
         self.add.updated.connect(self.on_add)
-        self.remove = qtypes.Button("remove")
+        self.remove = qtypes.Button("", value={"text": "remove"})
         self.remove.updated.connect(self.on_remove)
         self.append(self.add)
         self.append(self.remove)
     
     def on_add(self):
-        get_qtypes_widget(self.type_, "item", self, self.named_types, -2)
+        get_qtypes_widget(self.type_, self.type_, self, self.named_types, -2)
 
     def on_remove(self):
         try:
@@ -65,17 +65,15 @@ class Mapping(qtypes.Null):
         self.named_types = named_types
         self.key_type = key_type
         self.value_type = value_type
-        self.add = qtypes.Button("add")
+        self.add = qtypes.Button("", value={"text": "add"})
         self.add.updated.connect(self.on_add)
-        self.remove = qtypes.Button("remove")
+        self.remove = qtypes.Button("", value={"text": "remove"})
         self.remove.updated.connect(self.on_remove)
         self.append(self.add)
         self.append(self.remove)
     
     def on_add(self):
-        item = qtypes.Null("item")
-        self.insert(-2, item)
-        get_qtypes_widget(self.key_type, "key", item, self.named_types)
+        item = get_qtypes_widget(self.key_type, "key", self, self.named_types, -2)
         get_qtypes_widget(self.value_type, "value", item, self.named_types)
 
     def on_remove(self):
