@@ -1,6 +1,7 @@
 import ast
 import enum
 import json
+from pprint import pprint
 import sys
 
 from ophyd import sim
@@ -56,6 +57,9 @@ class Sequence(qtypes.Null):
         except IndexError:
             pass  # Nothing to remove
 
+    def get_value(self):
+        return [k.get_value() for k in self.children if not isinstance(k, qtypes.Button)]
+
 class Mapping(qtypes.Null):
     def __init__(self, name, key_type, value_type, parent, named_types, at=None):
         super().__init__(name)
@@ -82,6 +86,9 @@ class Mapping(qtypes.Null):
             self.removeChild(self.children.pop(-3))
         except IndexError:
             pass  # Nothing to remove
+
+    def get_value(self):
+        return {k.get_value(): k.children[0].get_value() for k in self.children if not isinstance(k, qtypes.Button)}
 
 
 class Union(qtypes.Null):
@@ -116,6 +123,11 @@ class Union(qtypes.Null):
         else:
             print(f"Could not set union value, {value}, for {self.type_enum.get()['allowed']}")
 
+    def get_value(self):
+        if self.type_enum.get_value() in ("None", "NoneType"):
+            return None
+        return self.children[-1].get_value()
+
 
 class NamedTuple(qtypes.Null):
     def __init__(self, name, type_map, parent, named_types, at=None):
@@ -127,6 +139,9 @@ class NamedTuple(qtypes.Null):
         self.named_types = named_types
         for k, v in type_map.items():
             get_qtypes_widget(v, k, self, self.named_types)
+
+    def get_value(self):
+        return tuple(i.get_value() for i in self.children)
 
 
 class AnyJson(qtypes.String):
@@ -223,12 +238,15 @@ class PlanWindow(QtWidgets.QMainWindow):
 
         self.tw.append(self.plan_sel)
         self.plan_sel.updated.emit(self.plan_sel.get())
+        self.gen_output_button = qtypes.Button("", value={"text": "Generate"})
+        self.tw.append(self.gen_output_button)
+        self.gen_output_button.updated.connect(self.gen_output)
 
     def on_plan_updated(self, plan):
         print()
-        from pprint import pprint
         pprint(ser[plan["value"]])
         self.plan_sel.takeChildren()
+        self.plan_sel.children = []
         for parm in ser[plan["value"]]["parameters"]:
             widget = get_parameter_widget(parm, self.plan_sel, ser[plan["value"]]["named_types"])
             if widget and "default" in parm:
@@ -237,6 +255,43 @@ class PlanWindow(QtWidgets.QMainWindow):
                 print(parm, "No widget")
 
         self.plan_sel.setExpanded(True)
+
+    def gen_output(self):
+        print()
+        plan = self.plan_sel.get_value()
+        args = []
+        kwargs = {}
+        kw_only = False
+        for parm in ser[plan]["parameters"]:
+            parm_name = parm["name"]
+            try:
+                value = self.get_value(parm_name)
+            except ValueError as e:
+                kw_only = True
+                if "default" not in parm and not parm["kind"]["name"].startswith("VAR"):
+                    print(str(a), " and it is required")
+                continue
+            if parm["kind"]["name"] == "POSITIONAL_ONLY":
+                args.append(value)
+            elif parm["kind"]["name"] == "POSITIONAL_OR_KEYWORD":
+                if kw_only:
+                    kwargs[parm_name] = value
+                else:
+                    args.append(value)
+            elif parm["kind"]["name"] == "VAR_POSITIONAL":
+                args.extend(value)
+            elif parm["kind"]["name"] == "KEYWORD_ONLY":
+                kwargs[parm_name] = value
+        out = {"name": plan, "args": args, "kwargs": kwargs}
+        print(json.dumps(out, indent=2))
+        return out
+    
+    def get_value(self, name):
+        for i in self.plan_sel.children:
+            if i.label == name:
+                return i.get_value()
+        raise ValueError(f"No value for {name}")
+
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
