@@ -9,6 +9,7 @@ import bluesky
 from bluesky import protocols
 from bluesky.plan_serialize import serialize_plan
 from bluesky.plans import count, grid_scan
+from wright_plans import grid_scan_wp
 
 import qtypes
 from qtpy import QtWidgets
@@ -23,7 +24,7 @@ def many_different_params(r: protocols.Readable, m: protocols.Movable, fl: proto
     yield bluesky.Msg("null")
 
 
-plans = [many_different_params, count, grid_scan]
+plans = [many_different_params, count, grid_scan, grid_scan_wp]
 
 ser = {x.__name__: serialize_plan(x) for x in plans}
 
@@ -47,9 +48,11 @@ class Sequence(qtypes.Null):
         self.remove.updated.connect(self.on_remove)
         self.append(self.add)
         self.append(self.remove)
+        self.setExpanded(True)
     
     def on_add(self):
         get_qtypes_widget(self.type_, self.type_, self, self.named_types, -2)
+        self.setExpanded(True)
 
     def on_remove(self):
         try:
@@ -76,10 +79,13 @@ class Mapping(qtypes.Null):
         self.remove.updated.connect(self.on_remove)
         self.append(self.add)
         self.append(self.remove)
+        self.setExpanded(True)
     
     def on_add(self):
         item = get_qtypes_widget(self.key_type, "key", self, self.named_types, -2)
         get_qtypes_widget(self.value_type, "value", item, self.named_types)
+        self.setExpanded(True)
+        item.setExpanded(True)
 
     def on_remove(self):
         try:
@@ -109,6 +115,7 @@ class Union(qtypes.Null):
         self.takeChild(1)
         if value["value"] not in ("None", "NoneType"):
             get_qtypes_widget(value["value"], "value", self, self.named_types)
+        self.setExpanded(True)
 
     def set_value(self, value):
         for ty in self.type_enum.get()["allowed"]:
@@ -129,6 +136,23 @@ class Union(qtypes.Null):
         return self.children[-1].get_value()
 
 
+class Tuple(qtypes.Null):
+    def __init__(self, name, type_list, parent, named_types, at=None):
+        super().__init__(name)
+        if at is None:
+            parent.append(self)
+        else:
+            parent.insert(at, self)
+        self.named_types = named_types
+        for k, v in enumerate(type_list):
+            get_qtypes_widget(v, str(k), self, self.named_types)
+        self.setExpanded(True)
+
+    def get_value(self):
+        return tuple(i.get_value() for i in self.children)
+
+
+
 class NamedTuple(qtypes.Null):
     def __init__(self, name, type_map, parent, named_types, at=None):
         super().__init__(name)
@@ -139,6 +163,7 @@ class NamedTuple(qtypes.Null):
         self.named_types = named_types
         for k, v in type_map.items():
             get_qtypes_widget(v, k, self, self.named_types)
+        self.setExpanded(True)
 
     def get_value(self):
         return tuple(i.get_value() for i in self.children)
@@ -224,6 +249,10 @@ def get_qtypes_widget(type_, name, parent, named_types, at=None):
                 # Only one option in union, don't bother with type selector enum
                 return get_qtypes_item(ast.unparse(params), name, parent, named_types, at)
             return Union(name, [ast.unparse(x) for x in params.elts], parent, named_types, at)
+        elif class_ == "typing.Tuple":
+            if not isinstance(params, ast.Tuple):
+                return Tuple(name, ast.unparse(params), parent, named_types, at)
+            return Tuple(name, [ast.unparse(x) for x in params.elts], parent, named_types, at)
 
     print(f"{type_} not yet handled")
 
